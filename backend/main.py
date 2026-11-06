@@ -12,6 +12,14 @@ import time
 from typing import Dict, List, Any, Optional
 from dotenv import load_dotenv
 
+import sys
+from pathlib import Path
+
+# Ensure backend directory is in sys.path so modules like 'services' and 'data' resolve correctly
+CURRENT_DIR = Path(__file__).parent.resolve()
+if str(CURRENT_DIR) not in sys.path:
+    sys.path.insert(0, str(CURRENT_DIR))
+
 # Load local environment variables
 load_dotenv(override=True)
 
@@ -19,9 +27,14 @@ from fastapi import FastAPI, WebSocket, WebSocketDisconnect, HTTPException, Quer
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
-from services.threat_engine import threat_engine, ThreatAnalysisResult
-from services.gnani_service import prisma_client, timbre_client
-from data.synthetic_scenarios import SYNTHETIC_SCENARIOS
+try:
+    from services.threat_engine import threat_engine, ThreatAnalysisResult
+    from services.gnani_service import prisma_client, timbre_client
+    from data.synthetic_scenarios import SYNTHETIC_SCENARIOS
+except ImportError:
+    from backend.services.threat_engine import threat_engine, ThreatAnalysisResult
+    from backend.services.gnani_service import prisma_client, timbre_client
+    from backend.data.synthetic_scenarios import SYNTHETIC_SCENARIOS
 
 app = FastAPI(
     title="Kavach AI - Backend API",

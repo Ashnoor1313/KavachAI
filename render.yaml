@@ -4,12 +4,14 @@ services:
     name: kavach-backend
     env: python
     buildCommand: pip install -r backend/requirements.txt
-    startCommand: uvicorn backend.main:app --host 0.0.0.0 --port $PORT
+    startCommand: uvicorn main:app --app-dir backend --host 0.0.0.0 --port $PORT
     plan: free
     autoDeploy: true
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.0
+      - key: PYTHONPATH
+        value: backend
       - key: DEMO_SIMULATION_MODE
         value: false
       - key: DPDP_COMPLIANCE_MODE
