@@ -1,0 +1,35 @@
+services:
+  # FastAPI Backend Service
+  - type: web
+    name: kavach-backend
+    env: python
+    buildCommand: pip install -r backend/requirements.txt
+    startCommand: uvicorn backend.main:app --host 0.0.0.0 --port $PORT
+    plan: free
+    autoDeploy: true
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: DEMO_SIMULATION_MODE
+        value: false
+      - key: DPDP_COMPLIANCE_MODE
+        value: true
+      - key: SYNTHETIC_DATA_ONLY
+        value: true
+
+  # Next.js Frontend Web App
+  - type: web
+    name: kavach-frontend
+    env: node
+    buildCommand: cd frontend && npm install && npm run build
+    startCommand: cd frontend && npm run start
+    plan: free
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: 20.x
+      - key: NEXT_PUBLIC_BACKEND_URL
+        fromService:
+          type: web
+          name: kavach-backend
+          property: host
