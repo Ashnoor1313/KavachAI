@@ -642,8 +642,8 @@ export default function Home() {
         threatScore={threatScore}
       />
 
-      {/* Main Content Area: Responsive & Clean */}
-      <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">
+      {/* Main Content Area: Mobile-First Responsive & Clean */}
+      <main className="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 py-3 sm:py-6 pb-28 md:pb-12">
         {currentView === 'elder' && (
           <ElderShieldView
             isMicActive={isMicActive}

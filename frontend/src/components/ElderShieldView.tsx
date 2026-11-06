@@ -294,11 +294,11 @@ export const ElderShieldView: React.FC<ElderShieldViewProps> = ({
   };
 
   return (
-    <div className="max-w-3xl mx-auto space-y-6 pb-16">
+    <div className="max-w-3xl mx-auto space-y-4 sm:space-y-6">
       
       {/* Unified Hero Status & Action Card */}
       <div
-        className={`rounded-3xl p-6 sm:p-8 border-2 transition-all shadow-xl relative overflow-hidden ${
+        className={`rounded-2xl sm:rounded-3xl p-5 sm:p-8 border-2 transition-all shadow-xl relative overflow-hidden ${
           isCritical
             ? 'bg-rose-950/70 border-rose-500 shadow-rose-950/40'
             : isSuspicious
@@ -306,11 +306,11 @@ export const ElderShieldView: React.FC<ElderShieldViewProps> = ({
             : 'bg-slate-900/80 border-slate-800 shadow-slate-950/30'
         }`}
       >
-        <div className="flex flex-col items-center text-center space-y-4">
+        <div className="flex flex-col items-center text-center space-y-3.5 sm:space-y-4">
           
           {/* Status Badge */}
           <span
-            className={`inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${
+            className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${
               isCritical
                 ? 'bg-rose-600 text-white animate-pulse'
                 : isSuspicious
@@ -354,27 +354,27 @@ export const ElderShieldView: React.FC<ElderShieldViewProps> = ({
           </div>
 
           {/* Clean Headline & Subtitle */}
-          <div className="space-y-1.5 max-w-lg">
-            <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+          <div className="space-y-1 sm:space-y-1.5 max-w-lg">
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-black text-white tracking-tight">
               {isCritical ? t.dangerTitle : isSuspicious ? t.cautionTitle : t.safeTitle}
             </h1>
-            <p className="text-sm sm:text-base text-slate-300 font-medium">
+            <p className="text-xs sm:text-base text-slate-300 font-medium">
               {isCritical ? t.dangerDesc : isSuspicious ? t.cautionDesc : t.safeDesc}
             </p>
           </div>
 
           {/* Emergency Danger Actions (Displayed when high risk detected) */}
           {isCritical && (
-            <div className="w-full pt-4 space-y-3">
-              <div className="p-3.5 rounded-2xl bg-rose-900/90 border border-rose-400 text-white font-bold text-sm sm:text-base flex items-center justify-center gap-2">
-                <PhoneOff className="w-5 h-5 text-amber-300 shrink-0" />
+            <div className="w-full pt-3 sm:pt-4 space-y-2.5 sm:space-y-3">
+              <div className="p-3 sm:p-3.5 rounded-xl sm:rounded-2xl bg-rose-900/90 border border-rose-400 text-white font-bold text-xs sm:text-base flex items-center justify-center gap-2">
+                <PhoneOff className="w-4 h-4 sm:w-5 sm:h-5 text-amber-300 shrink-0" />
                 <span>{t.hangUpNotice}</span>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-1">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-2.5 pt-1">
                 <button
                   onClick={isPlayingVoice ? handleStopVoice : handlePlayVoice}
-                  className="flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-white hover:bg-slate-100 text-rose-700 font-bold text-sm shadow transition-all"
+                  className="flex items-center justify-center gap-2 px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl bg-white hover:bg-slate-100 text-rose-700 font-bold text-xs sm:text-sm shadow active:scale-95 transition-transform"
                 >
                   {isPlayingVoice ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
                   <span>{isPlayingVoice ? t.stopWarningBtn : t.listenWarningBtn}</span>
@@ -382,7 +382,7 @@ export const ElderShieldView: React.FC<ElderShieldViewProps> = ({
 
                 <a
                   href="tel:1930"
-                  className="flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-sm shadow transition-all"
+                  className="flex items-center justify-center gap-2 px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs sm:text-sm shadow active:scale-95 transition-transform"
                 >
                   <PhoneCall className="w-4 h-4" />
                   <span>{t.callHelplineBtn}</span>
@@ -390,7 +390,7 @@ export const ElderShieldView: React.FC<ElderShieldViewProps> = ({
 
                 <button
                   onClick={onOpenWhatsAppModal}
-                  className="flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-sm shadow transition-all"
+                  className="flex items-center justify-center gap-2 px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs sm:text-sm shadow active:scale-95 transition-transform"
                 >
                   <Share2 className="w-4 h-4" />
                   <span>{t.callFamilyBtn}</span>
@@ -400,10 +400,10 @@ export const ElderShieldView: React.FC<ElderShieldViewProps> = ({
           )}
 
           {/* Single Clean Primary Action Button */}
-          <div className="w-full pt-4 max-w-md">
+          <div className="w-full pt-3 sm:pt-4 max-w-md">
             <button
               onClick={onToggleMic}
-              className={`w-full flex items-center justify-center gap-3 py-4 sm:py-4.5 px-6 rounded-2xl font-black text-base sm:text-lg transition-all shadow-lg ${
+              className={`w-full flex items-center justify-center gap-2.5 sm:gap-3 py-3.5 sm:py-4 px-4 sm:px-6 rounded-2xl font-black text-base sm:text-lg transition-all shadow-lg active:scale-95 ${
                 isMicActive
                   ? 'bg-rose-600 hover:bg-rose-700 text-white shadow-rose-950/40 ring-4 ring-rose-500/20'
                   : 'bg-emerald-500 hover:bg-emerald-400 text-slate-950 shadow-emerald-950/40 ring-4 ring-emerald-500/20 hover:scale-[1.01]'
@@ -412,7 +412,7 @@ export const ElderShieldView: React.FC<ElderShieldViewProps> = ({
               {isMicActive ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
               <span>{isMicActive ? t.stopShieldBtn : t.startShieldBtn}</span>
             </button>
-            <p className="text-xs text-slate-400 mt-2">
+            <p className="text-[11px] sm:text-xs text-slate-400 mt-2">
               {isMicActive ? t.shieldActiveDesc : t.shieldInactiveDesc}
             </p>
           </div>
@@ -480,20 +480,20 @@ export const ElderShieldView: React.FC<ElderShieldViewProps> = ({
       )}
 
       {/* 1-Click Practice Scenarios (Simplified & Minimalist) */}
-      <div className="bg-slate-900/60 rounded-3xl border border-slate-800 p-5 sm:p-6 space-y-4 shadow-sm">
+      <div className="bg-slate-900/60 rounded-2xl sm:rounded-3xl border border-slate-800 p-4 sm:p-6 space-y-3 sm:space-y-4 shadow-sm">
         <div className="flex items-center justify-between flex-wrap gap-2">
           <div>
-            <h3 className="text-base font-bold text-white flex items-center gap-2">
+            <h3 className="text-sm sm:text-base font-bold text-white flex items-center gap-2">
               <Sparkles className="w-4 h-4 text-amber-400" />
               <span>{t.testCallTitle}</span>
             </h3>
-            <p className="text-xs text-slate-400">{t.testCallDesc}</p>
+            <p className="text-[11px] sm:text-xs text-slate-400">{t.testCallDesc}</p>
           </div>
 
           {isPlaying && (
             <button
               onClick={onStopScenario}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-rose-400 text-xs font-bold border border-slate-700 transition-colors"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-rose-400 text-xs font-bold border border-slate-700 active:scale-95 transition-transform"
             >
               <Square className="w-3.5 h-3.5" />
               <span>Stop Demo</span>
@@ -501,73 +501,73 @@ export const ElderShieldView: React.FC<ElderShieldViewProps> = ({
           )}
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3">
           <button
             onClick={() => onStartScenario('scenario-1', 1)}
             disabled={isPlaying}
-            className="flex flex-col text-left p-4 rounded-2xl bg-slate-950/50 hover:bg-slate-950/90 border border-slate-800 hover:border-rose-500/50 transition-all disabled:opacity-50 group"
+            className="flex flex-col text-left p-3.5 sm:p-4 rounded-xl sm:rounded-2xl bg-slate-950/50 hover:bg-slate-950/90 border border-slate-800 hover:border-rose-500/50 active:scale-[0.98] transition-all disabled:opacity-50 group"
           >
-            <span className="text-xs font-bold text-rose-400">🚨 Scam Call</span>
-            <span className="text-sm font-bold text-white mt-1 group-hover:text-rose-200">
+            <span className="text-[11px] sm:text-xs font-bold text-rose-400">🚨 Scam Call</span>
+            <span className="text-xs sm:text-sm font-bold text-white mt-1 group-hover:text-rose-200">
               {t.fakePoliceTest}
             </span>
-            <span className="text-xs text-slate-400 mt-1">{t.fakePoliceDesc}</span>
+            <span className="text-[11px] text-slate-400 mt-0.5">{t.fakePoliceDesc}</span>
           </button>
 
           <button
             onClick={() => onStartScenario('scenario-2', 1)}
             disabled={isPlaying}
-            className="flex flex-col text-left p-4 rounded-2xl bg-slate-950/50 hover:bg-slate-950/90 border border-slate-800 hover:border-amber-500/50 transition-all disabled:opacity-50 group"
+            className="flex flex-col text-left p-3.5 sm:p-4 rounded-xl sm:rounded-2xl bg-slate-950/50 hover:bg-slate-950/90 border border-slate-800 hover:border-amber-500/50 active:scale-[0.98] transition-all disabled:opacity-50 group"
           >
-            <span className="text-xs font-bold text-amber-400">⚡ OTP Scam</span>
-            <span className="text-sm font-bold text-white mt-1 group-hover:text-amber-200">
+            <span className="text-[11px] sm:text-xs font-bold text-amber-400">⚡ OTP Scam</span>
+            <span className="text-xs sm:text-sm font-bold text-white mt-1 group-hover:text-amber-200">
               {t.electricityTest}
             </span>
-            <span className="text-xs text-slate-400 mt-1">{t.electricityDesc}</span>
+            <span className="text-[11px] text-slate-400 mt-0.5">{t.electricityDesc}</span>
           </button>
 
           <button
             onClick={() => onStartScenario('scenario-3', 1)}
             disabled={isPlaying}
-            className="flex flex-col text-left p-4 rounded-2xl bg-slate-950/50 hover:bg-slate-950/90 border border-slate-800 hover:border-emerald-500/50 transition-all disabled:opacity-50 group"
+            className="flex flex-col text-left p-3.5 sm:p-4 rounded-xl sm:rounded-2xl bg-slate-950/50 hover:bg-slate-950/90 border border-slate-800 hover:border-emerald-500/50 active:scale-[0.98] transition-all disabled:opacity-50 group"
           >
-            <span className="text-xs font-bold text-emerald-400">📦 Safe Call</span>
-            <span className="text-sm font-bold text-white mt-1 group-hover:text-emerald-200">
+            <span className="text-[11px] sm:text-xs font-bold text-emerald-400">📦 Safe Call</span>
+            <span className="text-xs sm:text-sm font-bold text-white mt-1 group-hover:text-emerald-200">
               {t.benignTest}
             </span>
-            <span className="text-xs text-slate-400 mt-1">{t.benignDesc}</span>
+            <span className="text-[11px] text-slate-400 mt-0.5">{t.benignDesc}</span>
           </button>
         </div>
       </div>
 
       {/* 3 Simple Safety Rules */}
-      <div className="bg-slate-900/60 rounded-3xl border border-slate-800 p-5 sm:p-6 space-y-3.5 shadow-sm">
-        <h3 className="text-base font-bold text-white flex items-center gap-2">
+      <div className="bg-slate-900/60 rounded-2xl sm:rounded-3xl border border-slate-800 p-4 sm:p-6 space-y-3 sm:space-y-3.5 shadow-sm">
+        <h3 className="text-sm sm:text-base font-bold text-white flex items-center gap-2">
           <HelpCircle className="w-4 h-4 text-emerald-400" />
           <span>{t.rulesTitle}</span>
         </h3>
 
-        <div className="space-y-2.5">
-          <div className="p-3.5 rounded-2xl bg-slate-950/50 border border-slate-800/80 flex items-start gap-3">
-            <span className="text-lg">👮‍♂️</span>
+        <div className="space-y-2 sm:space-y-2.5">
+          <div className="p-3 sm:p-3.5 rounded-xl sm:rounded-2xl bg-slate-950/50 border border-slate-800/80 flex items-start gap-2.5 sm:gap-3">
+            <span className="text-base sm:text-lg">👮‍♂️</span>
             <p className="text-xs sm:text-sm text-slate-200 font-medium">{t.rule1}</p>
           </div>
 
-          <div className="p-3.5 rounded-2xl bg-slate-950/50 border border-slate-800/80 flex items-start gap-3">
-            <span className="text-lg">🏦</span>
+          <div className="p-3 sm:p-3.5 rounded-xl sm:rounded-2xl bg-slate-950/50 border border-slate-800/80 flex items-start gap-2.5 sm:gap-3">
+            <span className="text-base sm:text-lg">🏦</span>
             <p className="text-xs sm:text-sm text-slate-200 font-medium">{t.rule2}</p>
           </div>
 
-          <div className="p-3.5 rounded-2xl bg-slate-950/50 border border-slate-800/80 flex items-start gap-3">
-            <span className="text-lg">📵</span>
+          <div className="p-3 sm:p-3.5 rounded-xl sm:rounded-2xl bg-slate-950/50 border border-slate-800/80 flex items-start gap-2.5 sm:gap-3">
+            <span className="text-base sm:text-lg">📵</span>
             <p className="text-xs sm:text-sm text-slate-200 font-medium">{t.rule3}</p>
           </div>
         </div>
 
-        <div className="pt-2 text-center">
+        <div className="pt-1 text-center">
           <button
             onClick={onDownloadPDF}
-            className="inline-flex items-center gap-2 text-xs font-semibold text-slate-400 hover:text-cyan-300 transition-colors"
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-400 hover:text-cyan-300 active:scale-95 transition-transform"
           >
             <FileDown className="w-3.5 h-3.5 text-cyan-400" />
             <span>{t.pdfDownloadBtn}</span>
