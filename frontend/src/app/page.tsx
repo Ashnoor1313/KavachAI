@@ -12,6 +12,7 @@ import { UtteranceItem, ThreatVectors, RiskLevel, SyntheticScenario, TelemetryDa
 import { generateCybercrimeEvidencePDF } from '@/utils/pdfGenerator';
 import { soundFX } from '@/utils/audioSynth';
 import { liveSpeechRecognizer } from '@/utils/speechRecognition';
+import { gnaniPrismaStreamer } from '@/utils/audioStreamer';
 import { getBackendBaseUrl, getWebSocketUrl } from '@/utils/apiConfig';
 
 // Fallback scenarios in case backend REST is offline
@@ -69,7 +70,7 @@ const DEFAULT_SCENARIOS: SyntheticScenario[] = [
       {
         id: 4,
         speaker: "Mock Officer Rathore (CBI / Mumbai Crime Branch)",
-        text: "Main Inspector Rathore bol raha hoon, Mumbai Crime Branch. Aapka FAKE-AADHAAR-0000 international money laundering syndicate se linked hai. Supreme Court ne non-bailable FIR darj kar di hai.",
+        text: "Main Inspector Rathore bol raha hoon, Mumbai Crime Branch. Aapka [Aadhaar Redacted] international money laundering syndicate se linked hai. Supreme Court ne non-bailable FIR darj kar di hai.",
         delay_ms: 3000,
         timestamp: "00:14",
         latency_ms: 168,
@@ -265,6 +266,8 @@ export default function Home() {
   const [speed, setSpeed] = useState<number>(1.0);
   const [ambientNoise, setAmbientNoise] = useState<boolean>(false);
   const [isMicActive, setIsMicActive] = useState<boolean>(false);
+  const [streamMode, setStreamMode] = useState<'prisma_live' | 'offline_sandbox'>('prisma_live');
+  const [measuredLatencyMs, setMeasuredLatencyMs] = useState<number>(154);
   const [isConnected, setIsConnected] = useState<boolean>(false);
   const [isWhatsAppOpen, setIsWhatsAppOpen] = useState<boolean>(false);
 
@@ -344,6 +347,16 @@ export default function Home() {
               setRiskLevel(data.risk_level);
               setScamCategory(data.scam_category);
               setVectors(data.vectors);
+
+              // Dynamically update measured latency from live round-trip timestamps
+              if (data.measured_latency_ms) {
+                setMeasuredLatencyMs(data.measured_latency_ms);
+              } else if (data.client_timestamp) {
+                const dynamicRtt = Math.max(1, Math.round(Date.now() - data.client_timestamp));
+                setMeasuredLatencyMs(dynamicRtt);
+              } else if (data.latency_ms) {
+                setMeasuredLatencyMs(data.latency_ms);
+              }
 
               // Audibly speak the caller dialogue
               soundFX.speakUtterance(data.speaker || 'Caller', data.text || '');
@@ -490,6 +503,9 @@ export default function Home() {
     setIsPlaying(false);
     soundFX.stopAmbient();
     soundFX.stopSpeech();
+    gnaniPrismaStreamer.stop();
+    liveSpeechRecognizer.stop();
+    setIsMicActive(false);
     localStreamIntervalRef.current.forEach((t) => clearTimeout(t));
     localStreamIntervalRef.current = [];
 
@@ -498,109 +514,124 @@ export default function Home() {
     }
   };
 
-  // Real Speech Recognition Microphone Toggle
-  const handleToggleMic = () => {
+  // Primary Live Microphone Capture (16kHz PCM Stream / Offline Sandbox Toggle)
+  const handleToggleMic = async () => {
     soundFX.playClick(650);
 
     if (isMicActive) {
+      gnaniPrismaStreamer.stop();
       liveSpeechRecognizer.stop();
       setIsMicActive(false);
       return;
     }
 
-    setIsMicActive(true);
+    if (streamMode === 'prisma_live') {
+      // PRIMARY PIPELINE: 16kHz 16-bit Mono PCM audio chunks over WebSocket to Gnani Prisma v2.5
+      if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) {
+        alert('Connecting to live Gnani Prisma stream server... Please try again in 2 seconds.');
+        return;
+      }
 
-    const started = liveSpeechRecognizer.start(
-      async (result) => {
-        if (!result.transcript) return;
+      setIsMicActive(true);
+      const started = await gnaniPrismaStreamer.start(wsRef.current, selectedLanguage);
+      if (!started) {
+        setIsMicActive(false);
+      }
+    } else {
+      // ISOLATED SANDBOX: Offline UI Sandbox Mode using browser Speech Recognition
+      setIsMicActive(true);
+      const started = liveSpeechRecognizer.start(
+        async (result) => {
+          if (!result.transcript) return;
 
-        try {
-          // Analyze speech segment against Threat Engine REST API
-          const response = await fetch(`${getBackendBaseUrl()}/api/analyze`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              text: result.transcript,
-              language: selectedLanguage === 'kn' ? 'kn-IN' : selectedLanguage === 'ta' ? 'ta-IN' : 'hi-IN'
-            })
-          });
+          try {
+            // Analyze speech segment against Threat Engine REST API
+            const response = await fetch(`${getBackendBaseUrl()}/api/analyze`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                text: result.transcript,
+                language: selectedLanguage === 'kn' ? 'kn-IN' : selectedLanguage === 'ta' ? 'ta-IN' : 'hi-IN'
+              })
+            });
 
-          if (response.ok) {
-            const data = await response.json();
-            const now = new Date();
-            const timeStr = `${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
+            if (response.ok) {
+              const data = await response.json();
+              const now = new Date();
+              const timeStr = `${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
 
-            const isCallerDetected = data.threat_score >= 35 || data.is_critical;
-            const speakerLabel = isCallerDetected ? 'Incoming Caller (Live Audio)' : 'You (Live Audio)';
+              const isCallerDetected = data.threat_score >= 35 || data.is_critical;
+              const speakerLabel = isCallerDetected ? 'Caller (Offline Sandbox Mic)' : 'You (Offline Sandbox Mic)';
 
-            const newUtterance: UtteranceItem = {
-              id: Date.now(),
-              speaker: speakerLabel,
-              text: result.transcript,
-              timestamp: timeStr,
-              latency_ms: 148,
-              threat_score: data.threat_score,
-              risk_level: data.risk_level,
-              scam_category: data.scam_category,
-              vectors: {
+              const newUtterance: UtteranceItem = {
+                id: Date.now(),
+                speaker: speakerLabel,
+                text: result.transcript,
+                timestamp: timeStr,
+                latency_ms: 148,
+                threat_score: data.threat_score,
+                risk_level: data.risk_level,
+                scam_category: data.scam_category,
+                vectors: {
+                  authority: data.authority_score,
+                  isolation: data.isolation_score,
+                  financial: data.financial_score
+                },
+                flagged_keywords: data.all_flagged_keywords || [],
+                is_critical: data.is_critical,
+                interventions: {
+                  hi: data.recommended_intervention_hindi,
+                  kn: data.recommended_intervention_kannada,
+                  ta: data.recommended_intervention_tamil,
+                  hinglish: data.recommended_intervention_hinglish,
+                  en: data.recommended_intervention_english
+                }
+              };
+
+              setUtterances((prev) => [...prev, newUtterance]);
+              setThreatScore(data.threat_score);
+              setRiskLevel(data.risk_level);
+              setScamCategory(data.scam_category);
+              setVectors({
                 authority: data.authority_score,
                 isolation: data.isolation_score,
                 financial: data.financial_score
-              },
-              flagged_keywords: data.all_flagged_keywords || [],
-              is_critical: data.is_critical,
-              interventions: {
-                hi: data.recommended_intervention_hindi,
-                kn: data.recommended_intervention_kannada,
-                ta: data.recommended_intervention_tamil,
-                hinglish: data.recommended_intervention_hinglish,
-                en: data.recommended_intervention_english
+              });
+
+              if (data.is_critical) {
+                soundFX.playWarningChime();
               }
-            };
-
-            setUtterances((prev) => [...prev, newUtterance]);
-            setThreatScore(data.threat_score);
-            setRiskLevel(data.risk_level);
-            setScamCategory(data.scam_category);
-            setVectors({
-              authority: data.authority_score,
-              isolation: data.isolation_score,
-              financial: data.financial_score
-            });
-
-            if (data.is_critical) {
-              soundFX.playWarningChime();
             }
+          } catch {
+            // Local fallback
+            const newUtterance: UtteranceItem = {
+              id: Date.now(),
+              speaker: 'Caller (Offline Sandbox Mic)',
+              text: result.transcript,
+              timestamp: 'Live',
+              latency_ms: 152,
+              threat_score: 55,
+              risk_level: 'SUSPICIOUS',
+              scam_category: 'Suspect Voice Pattern',
+              vectors: { authority: 50, isolation: 40, financial: 30 },
+              flagged_keywords: []
+            };
+            setUtterances((prev) => [...prev, newUtterance]);
           }
-        } catch {
-          // Local fallback
-          const newUtterance: UtteranceItem = {
-            id: Date.now(),
-            speaker: 'Incoming Caller (Live Audio)',
-            text: result.transcript,
-            timestamp: 'Live',
-            latency_ms: 152,
-            threat_score: 55,
-            risk_level: 'SUSPICIOUS',
-            scam_category: 'Suspect Voice Pattern',
-            vectors: { authority: 50, isolation: 40, financial: 30 },
-            flagged_keywords: []
-          };
-          setUtterances((prev) => [...prev, newUtterance]);
-        }
-      },
-      (error) => {
-        console.warn('Speech recognition notice:', error);
-        if (error === 'not-allowed' || error === 'permission-denied') {
-          alert('Microphone permission is required to listen to call audio. Please allow microphone access in your browser settings.');
-          setIsMicActive(false);
-        }
-      },
-      selectedLanguage
-    );
+        },
+        (error) => {
+          console.warn('Speech recognition notice:', error);
+          if (error === 'not-allowed' || error === 'permission-denied') {
+            alert('Microphone permission is required to listen to call audio. Please allow microphone access in your browser settings.');
+            setIsMicActive(false);
+          }
+        },
+        selectedLanguage
+      );
 
-    if (!started) {
-      setIsMicActive(false);
+      if (!started) {
+        setIsMicActive(false);
+      }
     }
   };
 
@@ -640,6 +671,9 @@ export default function Home() {
         currentView={currentView}
         onViewChange={setCurrentView}
         threatScore={threatScore}
+        measuredLatencyMs={measuredLatencyMs}
+        streamMode={streamMode}
+        onStreamModeChange={setStreamMode}
       />
 
       {/* Main Content Area: Mobile-First Responsive & Clean */}
@@ -662,6 +696,9 @@ export default function Home() {
             utterances={utterances}
             onOpenWhatsAppModal={() => setIsWhatsAppOpen(true)}
             onDownloadPDF={handleDownloadPDF}
+            measuredLatencyMs={measuredLatencyMs}
+            streamMode={streamMode}
+            onStreamModeChange={setStreamMode}
           />
         )}
 
@@ -688,6 +725,9 @@ export default function Home() {
             latestAudioBase64={latestAudioBase64}
             onDownloadPDF={handleDownloadPDF}
             onOpenWhatsAppModal={() => setIsWhatsAppOpen(true)}
+            measuredLatencyMs={measuredLatencyMs}
+            streamMode={streamMode}
+            onStreamModeChange={setStreamMode}
           />
         )}
 

@@ -40,6 +40,10 @@ export interface UtteranceItem {
     latency_ms?: number;
     model?: string;
   } | null;
+  measured_latency_ms?: number;
+  engine_benchmark?: string;
+  heuristic_latency?: string;
+  client_timestamp?: number;
 }
 
 export interface SyntheticScenario {
@@ -69,10 +73,14 @@ export interface SyntheticScenario {
 
 export interface TelemetryData {
   stt_model: string;
-  stt_latency_target: string;
-  stt_current_avg_latency: string;
+  stt_engine_benchmark?: string;
+  stt_latency_target?: string;
+  stt_current_avg_latency?: string;
+  measured_api_latency?: string;
   tts_model: string;
+  tts_engine_benchmark?: string;
   coercion_engine: string;
+  heuristic_evaluation_latency?: string;
   noise_suppression: string;
   dpdp_status: string;
   simulation_mode: boolean;

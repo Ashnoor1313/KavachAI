@@ -162,9 +162,10 @@ export const QuadrantIntervention: React.FC<QuadrantInterventionProps> = ({
         <button
           onClick={onOpenWhatsAppModal}
           className="flex items-center justify-center gap-2 px-3 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold transition-all shadow-md shadow-emerald-950/40"
+          title="1-Tap WhatsApp Family SOS (Pre-Filled GPS Deep Link)"
         >
           <Send className="w-3.5 h-3.5" />
-          <span>Send Family Alert</span>
+          <span>1-Tap WhatsApp Family SOS (Pre-Filled GPS Deep Link)</span>
         </button>
       </div>
     </div>

@@ -29,17 +29,17 @@ export const ForensicsView: React.FC<ForensicsViewProps> = ({
       desc: 'Natural authoritative speech synthesis in Hindi, Kannada, Tamil, and Hinglish for instant elder safety intervention.'
     },
     {
-      title: 'Kavach Multi-Vector Engine',
+      title: 'Kavach Deterministic Multi-Vector Heuristic Engine',
       latency: '<15 ms',
-      tag: 'Neural Lexicon Scoring',
-      desc: 'Real-time computation across Authority Impersonation, Psychological Isolation pressure, and Financial Extortion demands.'
+      tag: 'In-Memory Heuristic Evaluation (<15ms)',
+      desc: 'Deterministic multi-vector weighted regex/pattern scoring across Authority, Panic/Isolation, and Financial vectors evaluated locally in RAM on incoming Prisma v2.5 Hinglish transcript chunks.'
     }
   ];
 
   const dpdpGuarantees = [
     {
       title: '100% Synthetic Data Environment',
-      desc: 'All scenario identities (Mock Officer Vikram, Ramesh Kumar), phone numbers (+91-99999-XXXXX), and bank accounts are completely fictional.'
+      desc: 'All scenario identities (Mock Officer Vikram, Ramesh Kumar), phone numbers (+91-99999-XXXXX), redacted identifiers ([Aadhaar Redacted], FAKE-ID-REDACTED), and bank accounts are completely fictional.'
     },
     {
       title: 'Zero PII Storage & Ephemeral Memory',

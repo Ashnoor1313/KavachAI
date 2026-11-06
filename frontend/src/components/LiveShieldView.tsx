@@ -51,6 +51,9 @@ interface LiveShieldViewProps {
   latestAudioBase64?: string;
   onDownloadPDF: () => void;
   onOpenWhatsAppModal: () => void;
+  measuredLatencyMs?: number;
+  streamMode?: 'prisma_live' | 'offline_sandbox';
+  onStreamModeChange?: (mode: 'prisma_live' | 'offline_sandbox') => void;
 }
 
 export const LiveShieldView: React.FC<LiveShieldViewProps> = ({
@@ -74,7 +77,10 @@ export const LiveShieldView: React.FC<LiveShieldViewProps> = ({
   interventions,
   latestAudioBase64,
   onDownloadPDF,
-  onOpenWhatsAppModal
+  onOpenWhatsAppModal,
+  measuredLatencyMs = 154,
+  streamMode = 'prisma_live',
+  onStreamModeChange
 }) => {
   const [isPlayingVoice, setIsPlayingVoice] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -198,6 +204,13 @@ export const LiveShieldView: React.FC<LiveShieldViewProps> = ({
                   ? `Caution Advised: Unverified authority pressure detected`
                   : `Listening to Call Stream • Normal Conversation`}
               </h2>
+              {/* Speakerphone Companion Mode Operational Subtitle */}
+              <p className="text-[11px] sm:text-xs text-cyan-300/90 font-medium flex items-center gap-1.5 mt-1">
+                <span className="px-1.5 py-0.5 rounded bg-cyan-950/80 text-cyan-300 border border-cyan-800/60 font-semibold text-[10px]">
+                  Companion Mode
+                </span>
+                <span>Speakerphone Companion Mode: Place incoming suspicious call on speakerphone near mic.</span>
+              </p>
             </div>
           </div>
 
@@ -215,9 +228,10 @@ export const LiveShieldView: React.FC<LiveShieldViewProps> = ({
               <button
                 onClick={onOpenWhatsAppModal}
                 className="flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-all shadow-lg shadow-emerald-950/50"
+                title="1-Tap WhatsApp Family SOS (Pre-Filled GPS Deep Link)"
               >
                 <Share2 className="w-4 h-4" />
-                <span>Alert Family</span>
+                <span>1-Tap WhatsApp Family SOS (Pre-Filled GPS Deep Link)</span>
               </button>
             </div>
           )}
@@ -269,6 +283,38 @@ export const LiveShieldView: React.FC<LiveShieldViewProps> = ({
               </div>
             </div>
 
+            {/* Live Audio Pipeline Mode Toggle */}
+            <div className="mt-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 rounded-2xl bg-slate-950/70 border border-slate-800/80">
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
+                <span className="text-xs font-semibold text-slate-300">Speech Pipeline:</span>
+              </div>
+              <div className="flex flex-wrap items-center bg-slate-900 rounded-xl p-0.5 border border-slate-800 text-[11px] font-semibold">
+                <button
+                  onClick={() => onStreamModeChange?.('prisma_live')}
+                  className={`px-2.5 py-1 rounded-lg transition-all ${
+                    streamMode === 'prisma_live'
+                      ? 'bg-cyan-500 text-slate-950 font-bold shadow-sm'
+                      : 'text-slate-400 hover:text-white'
+                  }`}
+                  title="Default primary pipeline: 16kHz PCM audio stream over WebSockets to Gnani Prisma v2.5"
+                >
+                  Live Gnani Prisma v2.5 API Stream (16kHz PCM)
+                </button>
+                <button
+                  onClick={() => onStreamModeChange?.('offline_sandbox')}
+                  className={`px-2.5 py-1 rounded-lg transition-all ${
+                    streamMode === 'offline_sandbox'
+                      ? 'bg-amber-500 text-slate-950 font-bold shadow-sm'
+                      : 'text-slate-400 hover:text-white'
+                  }`}
+                  title="Isolated browser speech recognition for testing without consuming API credits"
+                >
+                  Offline UI Sandbox Mode (No API Credits Used)
+                </button>
+              </div>
+            </div>
+
             {/* Live Mic & Action Buttons */}
             <div className="mt-4 flex flex-wrap items-center gap-3">
               <button
@@ -280,7 +326,13 @@ export const LiveShieldView: React.FC<LiveShieldViewProps> = ({
                 }`}
               >
                 {isMicActive ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4 text-cyan-400" />}
-                <span>{isMicActive ? 'Listening to Mic (Click to Stop)' : 'Use Live Microphone'}</span>
+                <span>
+                  {isMicActive
+                    ? 'Listening (Speakerphone Companion Active)'
+                    : streamMode === 'prisma_live'
+                    ? 'Start Live Gnani Prisma v2.5 Stream (16kHz PCM)'
+                    : 'Start Offline UI Sandbox Mic'}
+                </span>
               </button>
 
               {isPlaying && (
@@ -531,6 +583,16 @@ export const LiveShieldView: React.FC<LiveShieldViewProps> = ({
 
             {/* 3 Simple, Clear Psychological Vector Bars */}
             <div className="mt-4 space-y-3 pt-3 border-t border-slate-800/70">
+              {/* Heuristic Engine Label & Sub-15ms Badge */}
+              <div className="flex flex-wrap items-center justify-between gap-1.5 pb-2 mb-1 border-b border-slate-800/60">
+                <span className="text-[11px] font-bold text-slate-200">
+                  Kavach Deterministic Multi-Vector Heuristic Engine
+                </span>
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-950/80 text-emerald-300 border border-emerald-800/60 font-mono">
+                  In-Memory Heuristic Evaluation (&lt;15ms)
+                </span>
+              </div>
+
               {/* Authority Impersonation */}
               <div>
                 <div className="flex items-center justify-between text-xs mb-1">
@@ -620,9 +682,10 @@ export const LiveShieldView: React.FC<LiveShieldViewProps> = ({
               <button
                 onClick={onOpenWhatsAppModal}
                 className="flex items-center justify-center gap-2 py-3 px-4 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-all shadow-md shadow-emerald-950/40"
+                title="1-Tap WhatsApp Family SOS (Pre-Filled GPS Deep Link)"
               >
                 <Share2 className="w-4 h-4" />
-                <span>WhatsApp SOS</span>
+                <span>1-Tap WhatsApp Family SOS (Pre-Filled GPS Deep Link)</span>
               </button>
 
               <button

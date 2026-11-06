@@ -59,7 +59,7 @@ SYNTHETIC_SCENARIOS = [
             {
                 "id": 4,
                 "speaker": "Mock Officer Rathore (CBI / Mumbai Crime Branch)",
-                "text": "Main Inspector Rathore bol raha hoon, Mumbai Crime Branch. Aapka FAKE-AADHAAR-0000 international money laundering syndicate se linked hai. Supreme Court ne non-bailable FIR darj kar di hai.",
+                "text": "Main Inspector Rathore bol raha hoon, Mumbai Crime Branch. Aapka [Aadhaar Redacted] international money laundering syndicate se linked hai. Supreme Court ne non-bailable FIR darj kar di hai.",
                 "delay_ms": 3000,
                 "timestamp": "00:14",
                 "latency_ms": 168,

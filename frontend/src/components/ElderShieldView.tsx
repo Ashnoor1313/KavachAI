@@ -48,6 +48,9 @@ interface ElderShieldViewProps {
   utterances: UtteranceItem[];
   onOpenWhatsAppModal: () => void;
   onDownloadPDF: () => void;
+  measuredLatencyMs?: number;
+  streamMode?: 'prisma_live' | 'offline_sandbox';
+  onStreamModeChange?: (mode: 'prisma_live' | 'offline_sandbox') => void;
 }
 
 export const ElderShieldView: React.FC<ElderShieldViewProps> = ({
@@ -63,7 +66,10 @@ export const ElderShieldView: React.FC<ElderShieldViewProps> = ({
   latestAudioBase64,
   utterances,
   onOpenWhatsAppModal,
-  onDownloadPDF
+  onDownloadPDF,
+  measuredLatencyMs = 154,
+  streamMode = 'prisma_live',
+  onStreamModeChange
 }) => {
   const [isPlayingVoice, setIsPlayingVoice] = useState(false);
   const isCritical = threatScore >= 75;
@@ -120,7 +126,7 @@ export const ElderShieldView: React.FC<ElderShieldViewProps> = ({
       listenWarningBtn: "चेतावनी सुनें",
       stopWarningBtn: "आवाज़ बंद करें",
       hangUpNotice: "अभी कॉल काटें! असली पुलिस कभी वीडियो कॉल पर अरेस्ट नहीं करती।",
-      callFamilyBtn: "परिवार को WhatsApp SOS भेजें",
+      callFamilyBtn: "1-Tap WhatsApp Family SOS (Pre-Filled GPS Deep Link)",
       callHelplineBtn: "1930 हेल्पलाइन पर कॉल करें",
       testCallTitle: "डेमो कॉल चलाकर देखें",
       testCallDesc: "देखें कि फ्रॉड कॉल आने पर कवच कैसे चेतावनी देता है:",
@@ -153,7 +159,7 @@ export const ElderShieldView: React.FC<ElderShieldViewProps> = ({
       listenWarningBtn: "Voice Warning Sunein",
       stopWarningBtn: "Voice Band Karein",
       hangUpNotice: "Abhi call disconnect karein! Police kabhi video call par arrest nahi karti.",
-      callFamilyBtn: "Family ko WhatsApp SOS Bhejein",
+      callFamilyBtn: "1-Tap WhatsApp Family SOS (Pre-Filled GPS Deep Link)",
       callHelplineBtn: "1930 Helpline Lagayein",
       testCallTitle: "Demo Call Chala Kar Dekhein",
       testCallDesc: "Check karein Kavach AI scam par kaise alert deta hai:",
@@ -186,7 +192,7 @@ export const ElderShieldView: React.FC<ElderShieldViewProps> = ({
       listenWarningBtn: "Listen to Warning",
       stopWarningBtn: "Stop Audio",
       hangUpNotice: "Hang up now! Real police never arrest citizens over video calls.",
-      callFamilyBtn: "Send WhatsApp SOS to Family",
+      callFamilyBtn: "1-Tap WhatsApp Family SOS (Pre-Filled GPS Deep Link)",
       callHelplineBtn: "Call 1930 Helpline",
       testCallTitle: "Try a Demo Call",
       testCallDesc: "See how Kavach alerts you when a scam call happens:",
@@ -219,7 +225,7 @@ export const ElderShieldView: React.FC<ElderShieldViewProps> = ({
       listenWarningBtn: "ಧ್ವನಿ ಎಚ್ಚರಿಕೆ ಆಲಿಸಿ",
       stopWarningBtn: "ಧ್ವನಿ ನಿಲ್ಲಿಸಿ",
       hangUpNotice: "ಈಗಲೇ ಫೋನ್ ಕಟ್ ಮಾಡಿ! ಪೊಲೀಸರು ವಿಡಿಯೋ ಕರೆಯಲ್ಲಿ ಬಂಧಿಸುವುದಿಲ್ಲ.",
-      callFamilyBtn: "ಕುಟುಂಬಕ್ಕೆ WhatsApp ಸಂದೇಶ ಕಳುಹಿಸಿ",
+      callFamilyBtn: "1-Tap WhatsApp Family SOS (Pre-Filled GPS Deep Link)",
       callHelplineBtn: "1930 ಸಹಾಯವಾಣಿ ಕರೆ ಮಾಡಿ",
       testCallTitle: "ಡೆಮೊ ಕರೆ ಪರೀಕ್ಷಿಸಿ",
       testCallDesc: "ವಂಚನೆ ಕರೆ ಎದುರಾದಾಗ ಎಚ್ಚರಿಕೆ ಹೇಗೆ ಬರುತ್ತದೆ ನೋಡಿ:",
@@ -252,7 +258,7 @@ export const ElderShieldView: React.FC<ElderShieldViewProps> = ({
       listenWarningBtn: "எச்சரிக்கையை கேளுங்கள்",
       stopWarningBtn: "குரலை நிறுத்துங்கள்",
       hangUpNotice: "உடனே போனை வையுங்கள்! போலீஸ் வீடியோ காலில் கைது செய்யாது.",
-      callFamilyBtn: "குடும்பத்திற்கு WhatsApp SOS அனுப்பவும்",
+      callFamilyBtn: "1-Tap WhatsApp Family SOS (Pre-Filled GPS Deep Link)",
       callHelplineBtn: "1930 உதவி எண் அழைக்கவும்",
       testCallTitle: "மாதிரி அழைப்பை இயக்கவும்",
       testCallDesc: "மோசடி அழைப்பு வரும்போது எப்படி எச்சரிக்கிறது என்று பாருங்கள்:",
@@ -361,6 +367,13 @@ export const ElderShieldView: React.FC<ElderShieldViewProps> = ({
             <p className="text-xs sm:text-base text-slate-300 font-medium">
               {isCritical ? t.dangerDesc : isSuspicious ? t.cautionDesc : t.safeDesc}
             </p>
+            {/* Operational Subtitle */}
+            <p className="text-[11px] sm:text-xs text-cyan-300/90 font-medium flex items-center justify-center gap-1.5 pt-1">
+              <span className="px-1.5 py-0.5 rounded bg-cyan-950/80 text-cyan-300 border border-cyan-800/60 font-semibold text-[10px]">
+                Companion Mode
+              </span>
+              <span>Speakerphone Companion Mode: Place incoming suspicious call on speakerphone near mic.</span>
+            </p>
           </div>
 
           {/* Emergency Danger Actions (Displayed when high risk detected) */}
@@ -391,6 +404,7 @@ export const ElderShieldView: React.FC<ElderShieldViewProps> = ({
                 <button
                   onClick={onOpenWhatsAppModal}
                   className="flex items-center justify-center gap-2 px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs sm:text-sm shadow active:scale-95 transition-transform"
+                  title="1-Tap WhatsApp Family SOS (Pre-Filled GPS Deep Link)"
                 >
                   <Share2 className="w-4 h-4" />
                   <span>{t.callFamilyBtn}</span>
@@ -401,6 +415,35 @@ export const ElderShieldView: React.FC<ElderShieldViewProps> = ({
 
           {/* Single Clean Primary Action Button */}
           <div className="w-full pt-3 sm:pt-4 max-w-md">
+            {/* Audio Pipeline Mode Toggle */}
+            <div className="w-full mb-3 p-2 rounded-2xl bg-slate-950/70 border border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-1.5 text-[11px]">
+              <span className="text-slate-400 font-medium">Speech Pipeline:</span>
+              <div className="flex items-center gap-1 bg-slate-900 rounded-xl p-0.5 border border-slate-800 text-[10px] font-semibold">
+                <button
+                  onClick={() => onStreamModeChange?.('prisma_live')}
+                  className={`px-2.5 py-1 rounded-lg transition-all ${
+                    streamMode === 'prisma_live'
+                      ? 'bg-cyan-500 text-slate-950 font-bold shadow-sm'
+                      : 'text-slate-400 hover:text-white'
+                  }`}
+                  title="Live 16kHz PCM stream to Gnani Prisma v2.5"
+                >
+                  Live Prisma v2.5 (16kHz PCM)
+                </button>
+                <button
+                  onClick={() => onStreamModeChange?.('offline_sandbox')}
+                  className={`px-2.5 py-1 rounded-lg transition-all ${
+                    streamMode === 'offline_sandbox'
+                      ? 'bg-amber-500 text-slate-950 font-bold shadow-sm'
+                      : 'text-slate-400 hover:text-white'
+                  }`}
+                  title="Offline browser speech testing mode"
+                >
+                  Offline UI Sandbox
+                </button>
+              </div>
+            </div>
+
             <button
               onClick={onToggleMic}
               className={`w-full flex items-center justify-center gap-2.5 sm:gap-3 py-3.5 sm:py-4 px-4 sm:px-6 rounded-2xl font-black text-base sm:text-lg transition-all shadow-lg active:scale-95 ${

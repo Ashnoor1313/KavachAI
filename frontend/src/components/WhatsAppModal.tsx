@@ -172,7 +172,7 @@ National Cyber Crime Helpline: 1930`;
           <div className="flex items-center gap-2.5 text-xs text-slate-400 bg-slate-950/60 p-3 rounded-2xl border border-slate-800">
             <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0" />
             <span>
-              DPDP Compliance Notice: All mock numbers & names are synthetic for testing purposes.
+              100% Synthetic DPDP Safe: Non-numeric redactions ([Aadhaar Redacted], FAKE-ID-REDACTED, +91-99999-XXXXX) applied.
             </span>
           </div>
         </div>
@@ -191,9 +191,10 @@ National Cyber Crime Helpline: 1930`;
             <button
               onClick={handleOpenWhatsApp}
               className="flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-all shadow-md shadow-emerald-950/50"
+              title="Triggers pre-populated wa.me emergency message with 1 tap"
             >
               <ExternalLink className="w-4 h-4" />
-              <span>Open in WhatsApp</span>
+              <span>1-Tap WhatsApp Family SOS (Pre-Filled GPS Deep Link)</span>
             </button>
 
             <button

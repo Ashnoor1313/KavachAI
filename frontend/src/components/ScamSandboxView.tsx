@@ -42,7 +42,7 @@ export const ScamSandboxView: React.FC<ScamSandboxViewProps> = ({
       title: 'CBI Digital Arrest',
       badge: '96% Risk',
       color: 'border-rose-500/60 bg-rose-950/20 text-rose-300',
-      text: 'Main Mumbai Crime Branch se Inspector Rathore bol raha hoon. Aapka FAKE-AADHAAR-0000 international money laundering syndicate se linked hai. Supreme Court ne non-bailable FIR darj kar di hai. Aap DIGITAL ARREST par hain! Video call bilkul mat kaatna! Turant RBI verification account par 4,80,000 rupaye RTGS kijiye.'
+      text: 'Main Mumbai Crime Branch se Inspector Rathore bol raha hoon. Aapka [Aadhaar Redacted] international money laundering syndicate se linked hai. Supreme Court ne non-bailable FIR darj kar di hai. Aap DIGITAL ARREST par hain! Video call bilkul mat kaatna! Turant RBI verification account par 4,80,000 rupaye RTGS kijiye.'
     },
     {
       title: 'Electricity Bill Cutoff',
@@ -175,7 +175,7 @@ export const ScamSandboxView: React.FC<ScamSandboxViewProps> = ({
               <span>Interactive Scam Analyzer & Testing Sandbox</span>
             </h2>
             <p className="text-xs text-slate-400 mt-1">
-              Test any suspicious SMS, WhatsApp message, spoken phrase, or simulated caller transcript against the Kavach Multi-Vector Engine.
+              Test any suspicious SMS, WhatsApp message, spoken phrase, or simulated caller transcript against the Kavach Deterministic Multi-Vector Heuristic Engine.
             </p>
           </div>
 
@@ -187,9 +187,10 @@ export const ScamSandboxView: React.FC<ScamSandboxViewProps> = ({
                   ? 'bg-rose-600 text-white animate-pulse'
                   : 'bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700'
               }`}
+              title="Offline UI Sandbox Voice Dictation (No API credits used)"
             >
               {isDictating ? <MicOff className="w-3.5 h-3.5" /> : <Mic className="w-3.5 h-3.5 text-cyan-400" />}
-              <span>{isDictating ? 'Listening...' : 'Dictate with Voice'}</span>
+              <span>{isDictating ? 'Listening...' : 'Offline Sandbox Voice'}</span>
             </button>
           </div>
         </div>
@@ -259,7 +260,7 @@ export const ScamSandboxView: React.FC<ScamSandboxViewProps> = ({
                 }`}
               >
                 <Sparkles className="w-4 h-4" />
-                <span>{isAnalyzing ? 'Analyzing Neural Lexicons...' : 'Analyze Threat'}</span>
+                <span>{isAnalyzing ? 'Evaluating Heuristic Patterns (<15ms)...' : 'Evaluate Threat'}</span>
               </button>
             </div>
           </div>
@@ -391,9 +392,10 @@ export const ScamSandboxView: React.FC<ScamSandboxViewProps> = ({
                   <button
                     onClick={onOpenWhatsAppModal}
                     className="flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-all"
+                    title="1-Tap WhatsApp Family SOS (Pre-Filled GPS Deep Link)"
                   >
                     <Send className="w-3.5 h-3.5" />
-                    <span>WhatsApp Family SOS</span>
+                    <span>1-Tap WhatsApp Family SOS (Pre-Filled GPS Deep Link)</span>
                   </button>
                 </div>
               </div>
